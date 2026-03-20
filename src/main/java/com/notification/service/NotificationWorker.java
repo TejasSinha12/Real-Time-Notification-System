@@ -20,6 +20,7 @@ public class NotificationWorker {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationWorker.class);
     private static final int MAX_RETRIES = 3;
+    private static final long RETRY_DELAY_MS = 2000;
 
     private final NotificationQueue queue;
     private final NotificationRepository repository;
@@ -83,6 +84,11 @@ public class NotificationWorker {
                 logger.warn("Notification {} failed after {} retries", notification.getId(), MAX_RETRIES);
             } else {
                 repository.save(notification);
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
                 queue.add(notification);
                 logger.info("Notification {} queued for retry (attempt {})", notification.getId(), notification.getRetryCount());
             }

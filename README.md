@@ -85,6 +85,7 @@ Subscribe to notifications:
 src/main/java/com/notification/
 ├── NotificationApplication.java
 ├── config/
+│   ├── GlobalExceptionHandler.java
 │   └── WebSocketConfig.java
 ├── controller/
 │   └── NotificationController.java

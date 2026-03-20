@@ -81,11 +81,17 @@ public class NotificationService {
 
     private boolean checkRateLimit(String recipientId) {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneMinuteAgo = now.minusMinutes(1);
+        
         List<Long> recentTimestamps = rateLimitMap.computeIfAbsent(recipientId, k -> new java.util.ArrayList<>());
         
-        recentTimestamps.removeIf(ts -> ts < now.minusMinutes(1).toEpochSecond(java.time.ZoneOffset.UTC));
+        recentTimestamps.removeIf(ts -> {
+            LocalDateTime tsTime = LocalDateTime.ofEpochSecond(ts, 0, java.time.ZoneOffset.UTC);
+            return tsTime.isBefore(oneMinuteAgo);
+        });
         
         if (recentTimestamps.size() >= RATE_LIMIT_PER_MINUTE) {
+            logger.warn("Rate limit exceeded for user: {}", recipientId);
             return false;
         }
         
