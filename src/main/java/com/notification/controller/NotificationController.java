@@ -1,5 +1,6 @@
 package com.notification.controller;
 
+import com.notification.dto.ApiResponse;
 import com.notification.dto.NotificationRequest;
 import com.notification.dto.NotificationResponse;
 import com.notification.dto.StatusUpdateRequest;
@@ -22,27 +23,27 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequest request) {
+    public ResponseEntity<ApiResponse<NotificationResponse>> createNotification(@Valid @RequestBody NotificationRequest request) {
         NotificationResponse response = notificationService.createNotification(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response, "Notification created"));
     }
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getNotifications(@RequestParam String recipientId) {
+    public ResponseEntity<ApiResponse<List<NotificationResponse>>> getNotifications(@RequestParam String recipientId) {
         List<NotificationResponse> notifications = notificationService.getNotificationsByRecipient(recipientId);
-        return ResponseEntity.ok(notifications);
+        return ResponseEntity.ok(ApiResponse.success(notifications));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NotificationResponse> getNotification(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<NotificationResponse>> getNotification(@PathVariable Long id) {
         NotificationResponse notification = notificationService.getNotificationById(id);
-        return ResponseEntity.ok(notification);
+        return ResponseEntity.ok(ApiResponse.success(notification));
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<NotificationResponse> updateStatus(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<NotificationResponse>> updateStatus(@PathVariable Long id,
                                                               @Valid @RequestBody StatusUpdateRequest request) {
         NotificationResponse response = notificationService.updateStatus(id, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response, "Status updated"));
     }
 }

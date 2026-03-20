@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Handles real-time notification delivery via WebSocket.
+ * Maps userId to session and sends notifications to connected users.
+ * If user is offline, notification remains in queue for retry.
+ */
 @Component
 public class NotificationWebSocketHandler {
 
