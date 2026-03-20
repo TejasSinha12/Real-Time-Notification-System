@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * In-memory queue for async notification processing.
  * Thread-safe implementation using ConcurrentLinkedQueue.
  * Notifications are added here when created and consumed by NotificationWorker.
+ * 
+ * Queue-based processing decouples API from delivery logic for better scalability
  */
 @Component
 public class NotificationQueue {

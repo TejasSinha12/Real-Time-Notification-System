@@ -1,58 +1,148 @@
 # Real-Time Notification System
 
-A Spring Boot backend for real-time notification delivery using WebSocket and in-memory queue processing.
+A backend system built with Spring Boot for delivering notifications in real-time using WebSocket communication, asynchronous queue processing, and retry mechanisms for reliability.
 
-## Overview
+---
 
-REST API that creates notifications and delivers them instantly via WebSocket. Uses an async queue with worker thread for reliable delivery and retry logic.
+## 🚀 Features
 
-## Features
+* REST APIs for notification creation and retrieval
+* WebSocket-based real-time delivery to connected users
+* In-memory queue for asynchronous processing
+* Retry mechanism for handling failed deliveries
+* Rate limiting to prevent abuse
+* Structured logging and centralized error handling
 
-- RESTful API for notification CRUD
-- WebSocket real-time delivery (`/ws?userId={id}`)
-- In-memory queue with background worker
-- Retry mechanism (3 attempts, 2s delay)
-- Rate limiting (10/min per user)
-- Status tracking: PENDING → SENT → DELIVERED/FAILED
+---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
-Client → REST API → Service → Queue → Worker → WebSocket → Client
+Client → REST API → Queue → Worker → WebSocket → User
 ```
 
-## API Endpoints
+### Flow Explanation
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/notifications` | Create notification |
-| GET | `/api/notifications?recipientId={id}` | Get user's notifications |
-| GET | `/api/notifications/{id}` | Get single notification |
-| PUT | `/api/notifications/{id}/status` | Update status |
-| GET | `/api/health` | Health check |
+1. Client sends request via REST API
+2. Notification is stored and pushed to queue
+3. Worker processes queue asynchronously
+4. System attempts delivery via WebSocket
+5. If user is offline → remains pending
+6. Retry mechanism ensures delivery reliability
 
-## Tech Stack
+---
 
-- Java 17 | Spring Boot 3.2 | Spring WebSocket | JPA | H2 | Maven
+## 📡 API Endpoints
 
-## Run Locally
+### Create Notification
+
+`POST /api/notifications`
+
+```json
+{
+  "recipientId": "user123",
+  "title": "Hello",
+  "message": "Test message"
+}
+```
+
+---
+
+### Get All Notifications for User
+
+`GET /api/notifications?recipientId={id}`
+
+---
+
+### Get Notification by ID
+
+`GET /api/notifications/{id}`
+
+---
+
+### Update Notification Status
+
+`PUT /api/notifications/{id}/status`
+
+---
+
+### Health Check
+
+`GET /api/health`
+
+```json
+{
+  "status": "UP"
+}
+```
+
+---
+
+## 🔄 Notification Lifecycle
+
+```
+PENDING → SENT → DELIVERED
+           ↓
+         FAILED
+```
+
+---
+
+## ⚡ Real-Time Delivery
+
+* WebSocket endpoint: `/ws?userId={id}`
+* If user is online → notification delivered instantly
+* If user is offline → stored and delivered on reconnect
+
+---
+
+## 🔁 Retry Mechanism
+
+* Retries failed deliveries up to 3 times
+* Adds delay between retries
+* Marks notification as FAILED if all retries fail
+
+---
+
+## 🛠️ Tech Stack
+
+* Java (Spring Boot)
+* WebSocket
+* JPA / Hibernate
+* MySQL / H2
+
+---
+
+## ▶️ Run Locally
 
 ```bash
+git clone https://github.com/TejasSinha12/Real-Time-Notification-System.git
+cd Real-Time-Notification-System
+
 mvn clean install
 mvn spring-boot:run
 ```
 
-Server: `http://localhost:8080`
+---
 
-## Example Request
+## 📌 Engineering Notes
 
-```bash
-curl -X POST http://localhost:8080/api/notifications \
-  -H "Content-Type: application/json" \
-  -d '{"recipientId":"user1","title":"Hello","message":"Welcome!"}'
-```
+* Queue-based processing decouples API requests from delivery logic, improving scalability
+* Retry handling ensures reliability in case of temporary failures
+* Rate limiting protects the system from excessive requests
+* Clean architecture separates concerns across controller, service, and repository layers
 
-## WebSocket
+---
 
-Connect: `ws://localhost:8080/ws?userId=user1`  
-Subscribe: `/user/queue/notifications`
+## 📄 License
+
+This project is open-source and available under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**Tejas Sinha**
+Backend Developer | System Builder
+
+GitHub: https://github.com/TejasSinha12

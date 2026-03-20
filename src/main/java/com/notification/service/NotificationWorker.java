@@ -19,6 +19,8 @@ import java.util.concurrent.Executors;
  * Background worker that processes notifications from the queue.
  * Implements retry logic: up to 3 attempts with 2s delay between retries.
  * If all retries fail, marks notification as FAILED.
+ * 
+ * Retry mechanism ensures reliability in case of temporary delivery failures
  */
 @Service
 public class NotificationWorker {
